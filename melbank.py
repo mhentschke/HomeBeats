@@ -30,7 +30,7 @@ Functions
 ---------
 """
 
-from numpy import abs, append, arange, insert, linspace, log10, round, zeros
+from numpy import abs, arange, linspace, log10, zeros
 
 
 def hertz_to_mel(freq):
