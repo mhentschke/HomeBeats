@@ -1,0 +1,21 @@
+display_fps: true
+display_pixels: true
+mic_rate: 44100
+fps: 60
+min_frequency: 30
+max_frequency: 2000
+n_fft_bins: 16
+n_rolling_history: 2
+min_volume_threshold: 0.00001
+effect: spectrum
+
+devices:
+  dmx:
+    - device: ultrawide
+      ip: 192.168.1.154
+      leds: 48
+      multicast: false
+      universe: 2
+      #effect: 
+      #  type: spectrum
+
