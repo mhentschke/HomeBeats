@@ -8,8 +8,8 @@ def get_property_if_exists(dictionary, property, default = None):
         return default
 
 device_list = [] 
-if "devices" in config_dict:
-    if "dmx" in config_dict["devices"]:
+if "devices" in config.config_dict:
+    if "dmx" in config.config_dict["devices"]:
         for d in config.config_dict["devices"]["dmx"]:
             ip = d["ip"]
             name = d["device"]
