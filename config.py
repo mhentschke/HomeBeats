@@ -1,7 +1,4 @@
 """Settings for audio reactive LED strip"""
-from __future__ import print_function
-from __future__ import division
-import os
 import yaml
 
 with open('config.yaml') as f:
