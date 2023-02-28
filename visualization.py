@@ -1,12 +1,27 @@
 import time
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d
-import config
+import config_loader
 import microphone
 import dsp
 import led
 import signal
 import sys
+import argparse
+import yaml
+
+
+parser = argparse.ArgumentParser(description="Audio Visualization software compatible with E1.31/SACN",
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("--config_file", help="set a configuration file to use")
+args = parser.parse_args()
+if args.config_file:
+    config = config_loader.Config(args.config_file)
+else:
+    config = config_loader.Config("config.yaml")
+outputs = led.Outputs(config.devices)
+
+dsp.create_mel_bank(config)
 
 _time_prev = time.time() * 1000.0
 """The previous time that the frames_per_second() function was called"""
@@ -16,7 +31,7 @@ _fps = dsp.ExpFilter(val=config.FPS, alpha_decay=0.2, alpha_rise=0.2)
 
 def shutdown(sig, frame):
     print("Shutting down device connections ...")
-    led.stop()
+    outputs.stop()
     print("Done, Goodbye!")
     sys.exit(0)
 
@@ -73,7 +88,7 @@ def microphone_update(audio_samples):
     if vol < config.MIN_VOLUME_THRESHOLD:
         print('No audio input. Volume below threshold. Volume:', vol)
         #led.pixels = np.tile(0, (3, config.N_PIXELS))
-        led.update(np.tile(0, (3, config.N_PIXELS)))
+        outputs.update(np.tile(0, (3, config.N_PIXELS)))
     else:
         # Transform audio input into the frequency domain
         N = len(y_data)
@@ -93,10 +108,7 @@ def microphone_update(audio_samples):
         mel /= mel_gain.value
         mel = mel_smoothing.update(mel)
         
-        led.update(mel)
-
-    if config.USE_GUI:
-        app.processEvents()
+        outputs.update(mel)
 
     if config.DISPLAY_FPS:
         fps = frames_per_second()
@@ -115,7 +127,5 @@ y_roll = np.random.rand(config.N_ROLLING_HISTORY, samples_per_frame) / 1e16
 
 
 if __name__ == '__main__':
-    # Initialize LEDs
-    #led.update(np.atleast_2d(0.0))
-    # Start listening to live audio stream
-    microphone.start_stream(microphone_update)
+    outputs.connect()
+    microphone.start_stream(microphone_update, config)

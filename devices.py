@@ -3,7 +3,7 @@ import dsp
 import sacn
 import os
 from scipy.ndimage.filters import gaussian_filter1d
-import config
+#import config
 
 def memoize(function):
     """Provides a decorator for memoizing functions"""
@@ -50,11 +50,12 @@ def interpolate(y, new_length):
     return z
 
 class Device():
-    def __init__(self, leds, effect, name):
+    def __init__(self, leds, effect, name, config):
         self.name = name
         self.leds = leds
         self.effect = effect
         self.last_data = None
+        self.config = config
         if self.effect == "spectrum":
             self.calculate_effect = self._effect_spectrum
         elif self.effect == "scroll":
@@ -113,7 +114,7 @@ class Device():
         try: self._p # This being undefined means the effect has not been initialized
         except AttributeError:
             self._p = np.tile(1.0, (3, self.leds // 2))
-            self._gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS),
+            self._gain = dsp.ExpFilter(np.tile(0.01, self.config.N_FFT_BINS),
                     alpha_decay=0.001, alpha_rise=0.99)
         y = y**2.0
         self._gain.update(y)
@@ -136,7 +137,7 @@ class Device():
         try: self._p # This being undefined means the effect has not been initialized
         except AttributeError:
             self._p = np.tile(1.0, (3, self.leds // 2))
-            self._gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS),
+            self._gain = dsp.ExpFilter(np.tile(0.01, self.config.N_FFT_BINS),
                     alpha_decay=0.001, alpha_rise=0.99)
             self._p_filt = dsp.ExpFilter(np.tile(1, (3, self.leds // 2)),
                        alpha_decay=0.1, alpha_rise=0.99)
@@ -168,11 +169,11 @@ class Device():
     
 
 class Device_DMX(Device):
-    def __init__(self, leds, effect, name, ip, universe, multicast):
+    def __init__(self, leds, effect, name, config, ip, universe, multicast):
         self.ip = ip
         self.multicast = multicast
         self.universe = universe
-        Device.__init__(self, leds, effect, name)
+        Device.__init__(self, leds, effect, name, config)
     def connect(self):
         if self.multicast:
             self.sender = sacn.sACNsender("self.ip")    
@@ -197,10 +198,10 @@ class Device_DMX(Device):
         return(np.reshape(data, (1, -1), order='F'))
 
 class Device_Screen(Device):
-    def __init__(self, effect):
+    def __init__(self, effect, config):
         leds = os.get_terminal_size()[0]
         name = "Terminal"
-        Device.__init__(self, leds, effect, name)
+        Device.__init__(self, leds, effect, name, config)
     def update(self, y):
         data = self.calculate_effect(y)
         string = ""

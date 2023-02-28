@@ -1,5 +1,4 @@
 import numpy as np
-import config
 import melbank
 
 
@@ -24,21 +23,21 @@ class ExpFilter:
         return self.value
 
 
-def rfft(data, window=None):
+'''def rfft(data, mic_rate, window=None):
     window = 1.0 if window is None else window(len(data))
     ys = np.abs(np.fft.rfft(data * window))
-    xs = np.fft.rfftfreq(len(data), 1.0 / config.MIC_RATE)
+    xs = np.fft.rfftfreq(len(data), 1.0 / mic_rate)
     return xs, ys
 
 
-def fft(data, window=None):
+def fft(data, mic_rate, window=None):
     window = 1.0 if window is None else window(len(data))
     ys = np.fft.fft(data * window)
-    xs = np.fft.fftfreq(len(data), 1.0 / config.MIC_RATE)
-    return xs, ys
+    xs = np.fft.fftfreq(len(data), 1.0 / mic_rate)
+    return xs, ys'''
 
 
-def create_mel_bank():
+def create_mel_bank(config):
     global samples, mel_y, mel_x
     samples = int(config.MIC_RATE * config.N_ROLLING_HISTORY / (2.0 * config.FPS))
     mel_y, (_, mel_x) = melbank.compute_melmat(num_mel_bands=config.N_FFT_BINS,
@@ -49,4 +48,4 @@ def create_mel_bank():
 samples = None
 mel_y = None
 mel_x = None
-create_mel_bank()
+#create_mel_bank()

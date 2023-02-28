@@ -1,7 +1,5 @@
-import config
-import devices
 
-def get_property_if_exists(dictionary, property, default = None):
+'''def get_property_if_exists(dictionary, property, default = None):
     if property in dictionary:
         return dictionary[property]
     else:
@@ -21,15 +19,19 @@ if "devices" in config.config_dict:
  
 
 if config.DISPLAY_PIXELS:
-    device_list.append(devices.Device_Screen(config.EFFECT))
+    device_list.append(devices.Device_Screen(config.EFFECT))'''
 
-for d in device_list:
-    d.connect()
+class Outputs:
+    def __init__(self, devices):
+        self.devices = devices
+    def connect(self):
+        for d in self.devices:
+            d.connect()
 
-def update(y):
-    for d in device_list:
-        d.update(y)
+    def update(self, y):
+        for d in self.devices:
+            d.update(y)
 
-def stop():
-    for d in device_list:
-        d.disconnect()
+    def stop(self):
+        for d in self.devices:
+            d.disconnect()

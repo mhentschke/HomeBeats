@@ -1,10 +1,9 @@
 import time
 import numpy as np
 import pyaudio
-import config
 
 
-def start_stream(callback):
+def start_stream(callback, config):
     p = pyaudio.PyAudio()
     frames_per_buffer = int(config.MIC_RATE / config.FPS)
     stream = p.open(format=pyaudio.paInt16,
