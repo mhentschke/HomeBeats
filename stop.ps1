@@ -1,0 +1,1 @@
+﻿get-wmiobject win32_process -filter "commandline like '%python.exe%visualization.py%'" | remove-wmiobject

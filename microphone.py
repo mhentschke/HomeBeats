@@ -10,7 +10,8 @@ def start_stream(callback, config):
                     channels=2,
                     rate=config.MIC_RATE,
                     input=True,
-                    frames_per_buffer=frames_per_buffer)
+                    frames_per_buffer=frames_per_buffer,
+                    input_device_index=config.INPUT_DEVICE_INDEX)
     overflows = 0
     prev_ovf_time = time.time()
     while True:
@@ -28,3 +29,13 @@ def start_stream(callback, config):
     stream.stop_stream()
     stream.close()
     p.terminate()
+
+def list_inputs():
+    p = pyaudio.PyAudio()
+    info = p.get_host_api_info_by_index(0)
+    numdevices = info.get('deviceCount')
+
+    for i in range(0, numdevices):
+        device_info = p.get_device_info_by_host_api_device_index(0, i)
+        if (device_info.get('maxInputChannels')) > 0:
+            print("Input Device id ", i, " - ", device_info.get('name'), " -  Channels:", device_info.get('maxInputChannels'))

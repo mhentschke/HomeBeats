@@ -1,7 +1,7 @@
 """Settings for audio reactive LED strip"""
 import yaml
 import devices
-try:
+'''try:
     with open('config.yaml') as f:
         config_dict = yaml.safe_load(f)
 
@@ -19,7 +19,7 @@ try:
 
         USE_GUI = False
 except FileNotFoundError as e:
-    print("Could not find the configuration file. Will load hardcoded defaults.")
+    print("Could not find the configuration file. Will load hardcoded defaults.")'''
 
 def get_property_if_exists(dictionary, property, default = None):
     if property in dictionary:
@@ -28,13 +28,18 @@ def get_property_if_exists(dictionary, property, default = None):
         return default
 
 class Config():
-    def __init__(self, filepath):
+    def __init__(self, filepath, overrides = None):
         self.filepath = filepath
-        self.load_from_file()
+        self.load_from_file(overrides = overrides)
 
-    def load_from_file(self):
+    def load_from_file(self, overrides = None):
         with open(self.filepath) as f:
-            config_dict = yaml.safe_load(f)
+            self.config_dict = yaml.safe_load(f)
+        if overrides:
+            self.config_dict.update(overrides)
+        self.load_from_dict(self.config_dict)
+    
+    def load_from_dict(self, config_dict):
         self.DISPLAY_FPS = config_dict["display_fps"]
         self.DISPLAY_PIXELS = config_dict["display_pixels"]
         self.MIC_RATE = config_dict["mic_rate"]
@@ -45,6 +50,7 @@ class Config():
         self.N_ROLLING_HISTORY = config_dict["n_rolling_history"]
         self.MIN_VOLUME_THRESHOLD = config_dict["min_volume_threshold"]
         self.EFFECT = config_dict["effect"]
+        self.INPUT_DEVICE_INDEX = config_dict["input_device_index"]
         self.devices = [] 
         if "devices" in config_dict:
             if "dmx" in config_dict["devices"]:
@@ -59,6 +65,11 @@ class Config():
         if self.DISPLAY_PIXELS:
             self.devices.append(devices.Device_Screen(self.EFFECT, self))
     
+    def override(self, config_dict):
+        self.unload()
+        self.config_dict.update(config_dict)
+        self.load_from_dict(self.config_dict)
+
     def unload(self):
         for d in self.devices:
             d.disconnect=()

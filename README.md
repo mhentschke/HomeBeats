@@ -12,6 +12,33 @@ To see this in action first time, follow this steps:
 4) Run the code using `python visualization.py`
 5) The script will, by default, display the animation in the terminal.
 
+## Advanced
+
+### Command Line Arguments
+
+* `--config-file path_to_file.yaml` - set a configuration file to use
+* `--config-override '{\"config_entry_to_override\":value}'` - set overrides for the config file in JSON format. Remember to escape the double quotes and wrap the JSON in single quotes.
+* `--list-inputs` - list input devices and exit immediately
+
+### HASS.Agent Configuration
+
+You can configure HASS.Agent to Enable the audio visualization through Home Assistant by creating the following two commands:
+
+1) `python c:/PATH/TO/REPOSITORY/visualization.py --config-file c:/PATH/TO/REPOSITORY/config.yaml`
+2) `C:\Users\Matheus\Repos\github\HomeBeats\stop.ps1` NOTE: For this to work, you need to [Enable Powershell scripts](#foo).
+
+You can also configure additional commands for different audio sources for example by using command overrides in the command line:
+
+`python c:/PATH/TO/REPOSITORY/visualization.py --config-file c:/PATH/TO/REPOSITORY/config.yaml --config-override '{\\\"input_device_index\\\":1}'`
+
+### Enabling Powershell scripts
+
+To enable stop.ps1 to be executed, you need to allow powershell scripts by running the following command in an administrator powershell instance:
+`Set-ExecutionPolicy -ExecutionPolicy Unrestricted`
+Note: Enabling powershell scripts can put your machine at risk according to the official Microsoft documentation: https:/go.microsoft.com/fwlink/?LinkID=135170. Use this at your own risk!
+
+
+
 
 ## Configuration
 
@@ -27,6 +54,7 @@ n_fft_bins: 16 # [Mandatory] Number of FFT Bins to use
 n_rolling_history: 2 # [Mandatory] Rolling History size
 min_volume_threshold: 0.00001 # [Mandatory] Minimum volume that triggers animations
 effect: spectrum # [Mandatory] Effect type
+input_device_index: 0
 
 devices: # [Optional]
   dmx: # [Optional] E1.31 or SACN protocol device

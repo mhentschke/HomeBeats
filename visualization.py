@@ -8,17 +8,31 @@ import led
 import signal
 import sys
 import argparse
-import yaml
-
+import json
 
 parser = argparse.ArgumentParser(description="Audio Visualization software compatible with E1.31/SACN",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--config_file", help="set a configuration file to use")
+parser.add_argument("--config-file", help="set a configuration file to use")
+parser.add_argument("--config-override", help="set overrides for the config file in JSON format. Remember to escape the double quotes and wrap the JSON in single quotes.")
+parser.add_argument("--list-inputs", action="store_true", help="list input devices and exit immediately")
 args = parser.parse_args()
-if args.config_file:
-    config = config_loader.Config(args.config_file)
+if args.config_override:
+    print(args.config_override)
+    overrides = json.loads(args.config_override)
 else:
-    config = config_loader.Config("config.yaml")
+    overrides = None
+
+if args.config_file:
+    config = config_loader.Config(args.config_file, overrides = overrides)
+else:
+    config = config_loader.Config("config.yaml", overrides = overrides)
+
+if args.list_inputs:
+    microphone.list_inputs()
+    exit()
+
+
+    
 outputs = led.Outputs(config.devices)
 
 dsp.create_mel_bank(config)

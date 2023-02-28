@@ -199,15 +199,21 @@ class Device_DMX(Device):
 
 class Device_Screen(Device):
     def __init__(self, effect, config):
-        leds = os.get_terminal_size()[0]
+        try:
+            leds = os.get_terminal_size()[0]
+        except:
+            print("[Warning]: couldn't set the Terminal Display.")
+            self.dummy = True
+            leds = 10
         name = "Terminal"
         Device.__init__(self, leds, effect, name, config)
     def update(self, y):
-        data = self.calculate_effect(y)
-        string = ""
-        data = np.clip(data, 0, 255)
-        for p in data.T:
-            string += "\u001b[48;2;{};{};{}m{}\u001b[0m".format(int(p[0]), int(p[1]), int(p[2]), " ")
-        print(string + "\r", end="")
+        if not self.dummy:
+            data = self.calculate_effect(y)
+            string = ""
+            data = np.clip(data, 0, 255)
+            for p in data.T:
+                string += "\u001b[48;2;{};{};{}m{}\u001b[0m".format(int(p[0]), int(p[1]), int(p[2]), " ")
+            print(string + "\r", end="")
     
     
