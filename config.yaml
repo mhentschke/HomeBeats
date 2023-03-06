@@ -19,4 +19,14 @@ devices:
       universe: 2
       #effect: 
       #  type: spectrum
+    - device: tv
+      ip: 192.168.1.120
+      leds: 170
+      multicast: false
+      universe: 3
+    - device: table
+      ip: 192.168.1.129
+      leds: 81
+      multicast: false
+      universe: 2
 

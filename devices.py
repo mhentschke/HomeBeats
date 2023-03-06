@@ -199,6 +199,7 @@ class Device_DMX(Device):
 
 class Device_Screen(Device):
     def __init__(self, effect, config):
+        self.dummy = False
         try:
             leds = os.get_terminal_size()[0]
         except:
